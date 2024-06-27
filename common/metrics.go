@@ -8,39 +8,27 @@ import (
 )
 
 var (
-	labels        = []string{"service", "action", "status_code"}
+	labels        = []string{"service", "action", "code"}
 	TotalRequests = prometheus.NewCounterVec(prometheus.CounterOpts{
-		Name: "aws_sdk_go_requests_total",
+		Name: "aws_sdk_go_request_total",
 		Help: "The total number of AWS SDK Go requests",
 	}, labels)
 
 	TotalRequestAttempts = prometheus.NewCounterVec(prometheus.CounterOpts{
-		Name: "aws_sdk_go_request_attempts_total",
+		Name: "aws_sdk_go_request_attempt_total",
 		Help: "The total number of AWS SDK Go request attempts",
 	}, labels)
 
 	RequestLatency = prometheus.NewHistogramVec(prometheus.HistogramOpts{
-		Name: "aws_sdk_go_request_latency",
-		Help: "Latency of AWS SDK Go requests",
-		Buckets: []float64{
-			10, 20, 30, 40, 50, 60, 70, 80, 90, 100,
-			125, 150, 175, 200, 225, 250, 275, 300,
-			400, 500, 600, 700, 800, 900,
-			1_000, 1_500, 2_000, 2_500, 3_000, 3_500, 4_000, 4_500, 5_000,
-			6_000, 7_000, 8_000, 9_000, 10_000,
-		},
+		Name:    "aws_sdk_go_request_duration_seconds",
+		Help:    "Latency of AWS SDK Go requests",
+		Buckets: prometheus.ExponentialBuckets(0.001, 2, 10),
 	}, labels)
 
 	RequestAttemptLatency = prometheus.NewHistogramVec(prometheus.HistogramOpts{
-		Name: "aws_sdk_go_request_attempt_latency",
-		Help: "Latency of AWS SDK Go request attempts",
-		Buckets: []float64{
-			10, 20, 30, 40, 50, 60, 70, 80, 90, 100,
-			125, 150, 175, 200, 225, 250, 275, 300,
-			400, 500, 600, 700, 800, 900,
-			1_000, 1_500, 2_000, 2_500, 3_000, 3_500, 4_000, 4_500, 5_000,
-			6_000, 7_000, 8_000, 9_000, 10_000,
-		},
+		Name:    "aws_sdk_go_request_attempt_duration_seconds",
+		Help:    "Latency of AWS SDK Go request attempts",
+		Buckets: prometheus.ExponentialBuckets(0.001, 2, 10),
 	}, labels)
 
 	RetryCount = prometheus.NewHistogramVec(prometheus.HistogramOpts{
@@ -54,9 +42,9 @@ var (
 
 func RequestLabels(service string, action string, statusCode int) prometheus.Labels {
 	return prometheus.Labels{
-		"service":     service,
-		"action":      action,
-		"status_code": fmt.Sprint(statusCode),
+		"service": service,
+		"action":  action,
+		"code":    fmt.Sprint(statusCode),
 	}
 }
 
