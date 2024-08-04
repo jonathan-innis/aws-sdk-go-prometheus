@@ -40,12 +40,12 @@ func NewPrometheusPublisher(r prometheus.Registerer) *PrometheusPublisher {
 // PostRequestMetrics publishes request metrics to the prometheus registry.
 func (p *PrometheusPublisher) PostRequestMetrics(data *metrics.MetricData) error {
 	common.TotalRequests.With(common.RequestLabels(data.ServiceID, data.OperationName, data.StatusCode)).Inc()
-	common.RequestLatency.With(common.RequestLabels(data.ServiceID, data.OperationName, data.StatusCode)).Observe(float64(data.APICallDuration.Milliseconds()))
+	common.RequestLatency.With(common.RequestLabels(data.ServiceID, data.OperationName, data.StatusCode)).Observe(float64(data.APICallDuration.Milliseconds()) / 1000.0)
 	common.RetryCount.With(common.RequestLabels(data.ServiceID, data.OperationName, data.StatusCode)).Observe(float64(data.RetryCount))
 
 	for _, attempt := range data.Attempts {
 		common.TotalRequestAttempts.With(common.RequestLabels(data.ServiceID, data.OperationName, attempt.StatusCode)).Inc()
-		common.RequestAttemptLatency.With(common.RequestLabels(data.ServiceID, data.OperationName, data.StatusCode)).Observe(float64(attempt.ServiceCallDuration))
+		common.RequestAttemptLatency.With(common.RequestLabels(data.ServiceID, data.OperationName, data.StatusCode)).Observe(float64(attempt.ServiceCallDuration.Milliseconds()) / 1000.0)
 	}
 	return nil
 }

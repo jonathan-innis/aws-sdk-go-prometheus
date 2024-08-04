@@ -22,13 +22,13 @@ var (
 	RequestLatency = prometheus.NewHistogramVec(prometheus.HistogramOpts{
 		Name:    "aws_sdk_go_request_duration_seconds",
 		Help:    "Latency of AWS SDK Go requests",
-		Buckets: prometheus.ExponentialBuckets(0.001, 2, 10),
+		Buckets: prometheus.ExponentialBuckets(0.01, 1.5, 20),
 	}, labels)
 
 	RequestAttemptLatency = prometheus.NewHistogramVec(prometheus.HistogramOpts{
 		Name:    "aws_sdk_go_request_attempt_duration_seconds",
 		Help:    "Latency of AWS SDK Go request attempts",
-		Buckets: prometheus.ExponentialBuckets(0.001, 2, 10),
+		Buckets: prometheus.ExponentialBuckets(0.01, 1.5, 20),
 	}, labels)
 
 	RetryCount = prometheus.NewHistogramVec(prometheus.HistogramOpts{

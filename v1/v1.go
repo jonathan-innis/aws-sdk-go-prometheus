@@ -21,11 +21,11 @@ func WithPrometheusMetrics(sess *session.Session, r prometheus.Registerer) *sess
 // PrometheusHandler is a request handler to fire prometheus metrics on requests.
 var PrometheusHandler = request.NamedHandler{Name: "PrometheusHandler", Fn: func(r *request.Request) {
 	common.TotalRequests.With(common.RequestLabels(r.ClientInfo.ServiceID, r.Operation.Name, r.HTTPResponse.StatusCode)).Inc()
-	common.RequestLatency.With(common.RequestLabels(r.ClientInfo.ServiceID, r.Operation.Name, r.HTTPResponse.StatusCode)).Observe(float64(time.Since(r.Time).Milliseconds()))
+	common.RequestLatency.With(common.RequestLabels(r.ClientInfo.ServiceID, r.Operation.Name, r.HTTPResponse.StatusCode)).Observe(float64(time.Since(r.Time).Milliseconds()) / 1000.0)
 	common.RetryCount.With(common.RequestLabels(r.ClientInfo.ServiceID, r.Operation.Name, r.HTTPResponse.StatusCode)).Observe(float64(r.RetryCount))
 }}
 
 var PrometheusRetryHandler = request.NamedHandler{Name: "PrometheusRetryHandler", Fn: func(r *request.Request) {
 	common.TotalRequestAttempts.With(common.RequestLabels(r.ClientInfo.ServiceID, r.Operation.Name, r.HTTPResponse.StatusCode)).Inc()
-	common.RequestAttemptLatency.With(common.RequestLabels(r.ClientInfo.ServiceID, r.Operation.Name, r.HTTPResponse.StatusCode)).Observe(float64(time.Since(r.AttemptTime).Milliseconds()))
+	common.RequestAttemptLatency.With(common.RequestLabels(r.ClientInfo.ServiceID, r.Operation.Name, r.HTTPResponse.StatusCode)).Observe(float64(time.Since(r.AttemptTime).Milliseconds()) / 1000.0)
 }}
