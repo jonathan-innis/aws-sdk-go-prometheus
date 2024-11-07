@@ -4,10 +4,10 @@ import (
 	"net/http"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
-	"github.com/aws/aws-sdk-go-v2/aws/middleware/private/metrics"
-	"github.com/aws/aws-sdk-go-v2/aws/middleware/private/metrics/middleware"
 	smithy "github.com/aws/smithy-go/middleware"
 	"github.com/jonathan-innis/aws-sdk-go-prometheus/common"
+	"github.com/jonathan-innis/aws-sdk-go-prometheus/v2/awsmetrics"
+	"github.com/jonathan-innis/aws-sdk-go-prometheus/v2/awsmetrics/middleware"
 	"github.com/prometheus/client_golang/prometheus"
 )
 
@@ -38,7 +38,7 @@ func NewPrometheusPublisher(r prometheus.Registerer) *PrometheusPublisher {
 }
 
 // PostRequestMetrics publishes request metrics to the prometheus registry.
-func (p *PrometheusPublisher) PostRequestMetrics(data *metrics.MetricData) error {
+func (p *PrometheusPublisher) PostRequestMetrics(data *awsmetrics.MetricData) error {
 	common.TotalRequests.With(common.RequestLabels(data.ServiceID, data.OperationName, data.StatusCode)).Inc()
 	common.RequestLatency.With(common.RequestLabels(data.ServiceID, data.OperationName, data.StatusCode)).Observe(float64(data.APICallDuration.Milliseconds()) / 1000.0)
 	common.RetryCount.With(common.RequestLabels(data.ServiceID, data.OperationName, data.StatusCode)).Observe(float64(data.RetryCount))
@@ -51,7 +51,7 @@ func (p *PrometheusPublisher) PostRequestMetrics(data *metrics.MetricData) error
 }
 
 // PostStreamMetrics publishes the stream metrics to the prometheus registry.
-func (p *PrometheusPublisher) PostStreamMetrics(data *metrics.MetricData) error {
+func (p *PrometheusPublisher) PostStreamMetrics(data *awsmetrics.MetricData) error {
 	common.TotalRequests.With(common.RequestLabels(data.ServiceID, data.OperationName, data.StatusCode)).Inc()
 	return nil
 }
